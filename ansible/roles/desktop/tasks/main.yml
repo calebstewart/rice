@@ -40,3 +40,15 @@
     scope: "user"
     enabled: true
     daemon_reload: true
+- name: Download Desktop Wallpaper
+  ansible.builtin.get_url:
+    url: https://wallpaperaccess.com/download/orange-polygon-692137
+    dest: "{{ ansible_env.HOME }}/Pictures/orange-polygon-material-wallpaper.png"
+- name: Link Current Wallpaper
+  ansible.builtin.file:
+    src: "{{ ansible_env.HOME }}/Pictures/orange-polygon-material-wallpaper.png"
+    dest: "{{ ansible_env.HOME }}/Pictures/desktop-background"
+    owner: "{{ ansible_env.USER }}"
+    group: "{{ ansible_env.GROUP }}"
+    mode: "0600"
+    state: link
