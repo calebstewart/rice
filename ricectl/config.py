@@ -34,7 +34,7 @@ def xdg_toml_settings_source(settings: BaseSettings) -> Dict[str, Any]:
     Precedence is given to the XDG_CONFIG_HOME, and then to system XDG directories.
     """
 
-    for path in [xdg_config_home(), list(xdg_config_dirs())]:
+    for path in [xdg_config_home(), *list(xdg_config_dirs())]:
         try:
             with (path / "rice" / "config.toml").open(
                 "r", encoding=settings.__config__.env_file_encoding

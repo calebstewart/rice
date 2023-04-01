@@ -18,8 +18,8 @@ if [ "$#" -gt 1 ]; then
 fi
 
 # Default clone location
-mkdir -p ~/.local/share
-CLONE_PATH=$(realpath -m "~/.local/share/rice")
+mkdir -p "$HOME/.local/share"
+CLONE_PATH=$(realpath -m "$HOME/.local/share/rice")
 
 if [ "$#" -eq 1 ]; then
   CLONE_PATH=$(realpath -m  "$1")

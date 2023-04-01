@@ -16,7 +16,13 @@ from ricectl.config import Config
 
 # Root typer application
 root = typer.Typer(help="Manage RICE installation, update and synchronization")
+config_app = typer.Typer(help="Manage configuration")
+root.add_typer(config_app)
+
+# Load configuration
 config = Config()
+
+# Create a global console instance
 console = Console(log_path=False)
 
 
@@ -79,6 +85,14 @@ def rice_status():
 @root.command("help")
 def rice_help():
     """Print detailed documentation/help information"""
+
+
+@config_app.command("set")
+def config_set(param: str, value: str):
+    """Set a value in the RICE configuration. The parameter name
+    must exist in the configuration, and the value will be parsed
+    into the requisite type. If the value is not valid, nothing is
+    changed."""
 
 
 if __name__ == "__main__":
