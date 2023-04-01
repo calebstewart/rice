@@ -1,9 +1,12 @@
 ---
-- name: System Upgrade
-  ansible.builtin.dnf:
-    name: "*"
-    state: latest # noqa package-latest
+# FIXME: Uncomment after done testing
+# - name: System Upgrade
+#   become: true
+#   ansible.builtin.dnf:
+#     name: "*"
+#     state: latest # noqa package-latest
 - name: "Install System Tools"
+  become: true
   ansible.builtin.dnf:
     name:
       - "neovim"
