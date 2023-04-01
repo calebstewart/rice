@@ -36,6 +36,9 @@ set $ws_config python $HOME/.config/sway/scripts/organize-workspaces.py
 # Configure workspaces for multimonitor (horizontal)
 exec_always $ws_config
 
+# Always start on the first workspace for the default output
+exec $ws_go_to 1
+
 ### Idle configuration
 exec swayidle -w \
          timeout 300 "$lock" \
