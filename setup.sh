@@ -39,7 +39,7 @@ cd "$CLONE_PATH" || fatal "failed to enter rice directory"
 
 # Setup a virtual environment for ansible
 echo "[+] setting python virtual environment"
-python3 -m venv env || fatal "failed to create virtual environment"
+python3 -m venv --system-site-packages --upgrade-deps env || fatal "failed to create virtual environment"
 
 # Install ansible in the virtual environment
 echo "[+] installing python requirements"

@@ -31,7 +31,7 @@ set $ws_config python $HOME/.config/sway/scripts/organize-workspaces.py
 
 ### Output configuration
 # Default wallpaper (more resolutions are available in @datadir@/backgrounds/sway/)
-output * bg $HOME/Pictures/desktop-background fill
+# output * bg $HOME/Pictures/desktop-background fill
 
 # Configure workspaces for multimonitor (horizontal)
 exec_always $ws_config
