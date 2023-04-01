@@ -1,6 +1,6 @@
 ---
 - name: RICEy Boi
-  hosts: all
+  hosts: localhost
   roles:
     - common
     - desktop
