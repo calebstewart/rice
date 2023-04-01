@@ -50,8 +50,8 @@ echo "[+] installing ricectl command to /usr/local/bin/"
 mkdir -p "$HOME/.local/bin/"
 ln -s "$CLONE_PATH/env/bin/ricectl" "$HOME/.local/bin/ricectl" || fatal "failed to install ricectl script"
 
-# Install the ricectl tab completion scripts
-"$CLONE_PATH/env/bin/ricectl" --install-completion || echo "[!] failed to install ricectl completion script"
+echo "[+] install Ansible Galaxy gantsign.oh-my-zsh role"
+"$CLONE_PATH/env/bin/ansible-galaxy" install gantsign.oh-my-zsh || fatal "failed to install oh-my-zsh galaxy role"
 
 # Setup an initial user configuration with the repo location
 if ! [ -f "$HOME/.config/rice/config.toml" ]; then

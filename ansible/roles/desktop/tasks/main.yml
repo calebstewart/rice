@@ -1,0 +1,42 @@
+---
+- name: Enable SwayNotificationCenter COPR Repository
+  become: true
+  community.general.copr:
+    host: copr.fedorainfracloud.org
+    state: enabled
+    name: erikreider/SwayNotificationCenter
+- name: Install Desktop Packages
+  become: true
+  ansible.builtin.dnf:
+    name:
+      - sway
+      - swaylock
+      - wofi
+      - waybar
+      - swayidle
+      - grimshot
+      - SwayNotificationCenter
+      - NetworkManager-tui
+      - alacritty
+      - gammastep
+      - brightnessctl
+    state: present
+- name: Install Desktop Configurations
+  ansible.builtin.copy:
+    src: files/
+    dest: "{{ ansible_env.HOME }}/.config/"
+    owner: "{{ ansible_user }}"
+    group: "{{ ansible_user }}"
+    mode: preserve
+- name: Enable Gammastep Service
+  ansible.builtin.systemd:
+    name: "gammastep.service"
+    scope: "user"
+    enabled: true
+    daemon_reload: true
+- name: Enable Notification Center Service
+  ansible.builtin.systemd:
+    name: "swaync.service"
+    scope: "user"
+    enabled: true
+    daemon_reload: true

@@ -1,0 +1,13 @@
+[general]
+temp-day=5700
+temp-night=3600
+gamma=0.8
+fade=1
+adjustment-method=wayland
+location-provider=manual
+dawn-time=07:00
+dusk-time=17:00
+
+[manual]
+lat=38.88
+lon=77.00

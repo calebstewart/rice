@@ -1,0 +1,31 @@
+---
+- name: System Upgrade
+  ansible.builtin.dnf:
+    name: "*"
+    state: latest # noqa package-latest
+- name: "Install System Tools"
+  ansible.builtin.dnf:
+    name:
+      - "neovim"
+      - "NetworkManager-tui"
+      - "glances"
+      - "zsh"
+    state: present
+- name: Install Oh-My-Zsh
+  ansible.builtin.import_role:
+    name: gantsign.oh-my-zsh
+  vars:
+    users:
+      - username: "{{ ansible_user }}"
+        theme: amuse
+        plugins:
+          - git
+          - zsh-syntax-highlighting
+        update_mode: auto
+        update_frequency: 10
+- name: "Symlink vim to nvim"
+  become: true
+  ansible.builtin.file:
+    src: /usr/bin/nvim
+    dest: /usr/bin/vim
+    state: link

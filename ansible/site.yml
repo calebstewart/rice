@@ -1,0 +1,12 @@
+---
+- name: RICEy Boi
+  hosts: all
+  roles:
+    - common
+    - desktop
+#     - role: laptop
+#       tags: [laptop]
+#     - virtualization
+#     - containers
+#     - development
+#     - reverse_engineering
