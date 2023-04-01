@@ -49,6 +49,6 @@
     src: "{{ ansible_env.HOME }}/Pictures/orange-polygon-material-wallpaper.png"
     dest: "{{ ansible_env.HOME }}/Pictures/desktop-background"
     owner: "{{ ansible_env.USER }}"
-    group: "{{ ansible_env.GROUP }}"
+    group: "{{ ansible_env.USER }}"
     mode: "0600"
     state: link
