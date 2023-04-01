@@ -25,8 +25,8 @@
   ansible.builtin.copy:
     src: files/
     dest: "{{ ansible_env.HOME }}/.config/"
-    owner: "{{ ansible_user }}"
-    group: "{{ ansible_user }}"
+    owner: "{{ ansible_env.USER }}"
+    group: "{{ ansible_env.USER }}"
     mode: preserve
 - name: Enable Gammastep Service
   ansible.builtin.systemd:

@@ -19,7 +19,7 @@
     name: gantsign.oh-my-zsh
   vars:
     users:
-      - username: "{{ ansible_user }}"
+      - username: "{{ ansible_env.USER }}"
         theme: amuse
         plugins:
           - git
