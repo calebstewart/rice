@@ -32,7 +32,9 @@ def rice_sync():
         if (info.flags & FetchInfo.HEAD_UPTODATE) != 0:
             break
     else:
-        console.log(f"Already up-to-date on commit {repo.active_branch.commit[:6]}")
+        console.log(
+            f"Already up-to-date on {repo.active_branch.name}@{repo.active_branch.commit.hexsha[:7]} ({repo.active_branch.commit.summary})"
+        )
         return
 
     with Progress(console=console, transient=True, expand=True) as progress:
@@ -61,6 +63,12 @@ def rice_apply():
 @root.command("update")
 def rice_update():
     """Synchronize the RICE repository and then apply the updated state with Ansible if there were changes."""
+
+    # Sync the repository
+    rice_sync()
+
+    # Apply any changes
+    rice_apply()
 
 
 @root.command("status")
