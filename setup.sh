@@ -19,10 +19,10 @@ fi
 
 # Default clone location
 mkdir -p ~/.local/share
-CLONE_PATH=$(realpath "~/.local/share/rice")
+CLONE_PATH=$(realpath -m "~/.local/share/rice")
 
 if [ "$#" -eq 1 ]; then
-  CLONE_PATH=$(realpath "$1")
+  CLONE_PATH=$(realpath -m  "$1")
 fi
 
 # Ensure the clone path does not exist
