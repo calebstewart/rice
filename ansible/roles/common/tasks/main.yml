@@ -13,7 +13,6 @@
       - "NetworkManager-tui"
       - "glances"
       - "zsh"
-      - "zsh-syntax-highlighting"
     state: present
 - name: Install Oh-My-Zsh
   ansible.builtin.import_role:
@@ -33,6 +32,13 @@
           - zsh-syntax-highlighting
         update_mode: auto
         update_frequency: 10
+- name: "Install zsh-syntax-highlighting"
+  ansible.builtin.git:
+    repo: https://github.com/zsh-users/zsh-syntax-highlighting.git
+    dest: "{{ ansible_env.HOME }}/.oh-my-zsh/custom/plugins/zsh-syntax-highlighting"
+    update: true
+    accept_newhostkey: true
+    single_branch: true
 - name: "Symlink vim to nvim"
   become: true
   ansible.builtin.file:
