@@ -1,0 +1,27 @@
+[tool.isort]
+profile = "black"
+
+[tool.poetry]
+name = "ricectl"
+version = "0.1.0"
+description = "Rice configuration and installation manager"
+authors = ["Caleb Stewart <caleb.stewart94@gmail.com>"]
+license = "MIT"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+typer = {extras = ["all"], version = "^0.7.0"}
+ansible = "^7.4.0"
+gitpython = "^3.1.31"
+pydantic = "^1.10.7"
+xdg-base-dirs = "^6.0.0"
+toml = "^0.10.2"
+rich = "<13.0.0"
+
+[tool.poetry.scripts]
+ricectl = "ricectl:root"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
