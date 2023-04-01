@@ -13,11 +13,18 @@
       - "NetworkManager-tui"
       - "glances"
       - "zsh"
+      - "zsh-syntax-highlighting"
     state: present
 - name: Install Oh-My-Zsh
   ansible.builtin.import_role:
     name: gantsign.oh-my-zsh
   vars:
+    oh_my_zsh_theme: amuse
+    oh_my_zsh_plugins:
+      - git
+      - zsh-syntax-highlighting
+    oh_my_zsh_update_mode: auto
+    oh_my_zsh_frequency: 10
     users:
       - username: "{{ ansible_env.USER }}"
         theme: amuse
