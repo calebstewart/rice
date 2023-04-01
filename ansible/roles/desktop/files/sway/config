@@ -49,9 +49,9 @@ exec $ws_go_to 1
 
 ### Idle configuration
 exec swayidle -w \
-         timeout 300 "$lock" \
+         timeout 300 "$locker" \
          timeout 600 'swaymsg "output * power off"' resume 'swaymsg "output * power on"' \
-         before-sleep "$lock"
+         before-sleep "$locker"
 
 ### Input configuration
 # Replace caps lock with escape
@@ -78,7 +78,7 @@ input "type:touchpad" {
     bindsym $mod+q kill
 
     # Manually lock the screen
-    bindsym $mod+Escape exec $lock
+    bindsym $mod+Escape exec $locker
 
     # Start your launcher
     bindsym $mod+d exec $menu
