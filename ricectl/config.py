@@ -11,6 +11,7 @@ from xdg_base_dirs import xdg_config_home, xdg_config_dirs
 class Tag(str, Enum):
     """Known ansible tags"""
 
+    CORE = "core"
     LAPTOP = "laptop"
     MACBOOK = "macbook"
     FRAMEWORK = "framework"

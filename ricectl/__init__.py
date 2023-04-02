@@ -79,9 +79,6 @@ def rice_apply():
         f"Executing [cyan]ansible-playbook[/cyan] with tags {list(config.tags)}"
     )
 
-    tags = {"core"}
-    tags |= config.tags
-
     arguments = [
         venv_bin / "ansible-playbook",
         "--ask-become-pass",
@@ -165,7 +162,10 @@ def rice_remove_tag(tags: List[Tag]):
     any new changes to your system or remove the changes added by the tag,
     but does stop those changes from being made during apply operations."""
 
-    config.tags -= set(tags)
+    if Tag.CORE in tags:
+        console.log("[yellow]warning[/yellow]: cannot remove 'core' tag")
+
+    config.tags -= set([t for t in tags if t != Tag.CORE])
     config.pending = True
     config.save()
 
