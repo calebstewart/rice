@@ -58,3 +58,6 @@ if ! [ -f "$HOME/.config/rice/config.toml" ]; then
   mkdir -p "$HOME/.config/rice"
   echo 'repo = "'"$CLONE_PATH"'"' > "$HOME/.config/rice/config.toml"
 fi
+
+# Show the status after installation
+ricectl status
