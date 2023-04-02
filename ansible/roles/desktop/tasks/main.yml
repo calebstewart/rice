@@ -23,7 +23,7 @@
     state: present
 - name: Install Desktop Configurations
   ansible.builtin.copy:
-    src: files/
+    src: files/config/
     dest: "{{ ansible_env.HOME }}/.config/"
     owner: "{{ ansible_env.USER }}"
     group: "{{ ansible_env.USER }}"

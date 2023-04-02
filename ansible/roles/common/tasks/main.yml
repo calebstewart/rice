@@ -32,6 +32,13 @@
           - zsh-syntax-highlighting
         update_mode: auto
         update_frequency: 10
+- name: "Install Oh-My-Zsh custom scripts"
+  ansible.builtin.copy:
+    src: files/zsh-custom/
+    dest: "{{ ansible_env.HOME }}/.oh-my-zsh/custom/"
+    owner: "{{ ansible_env.USER }}"
+    group: "{{ ansible_env.USER }}"
+    mode: preserve
 - name: "Install zsh-syntax-highlighting"
   ansible.builtin.git:
     repo: https://github.com/zsh-users/zsh-syntax-highlighting.git
