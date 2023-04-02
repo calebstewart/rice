@@ -28,14 +28,9 @@ config = Config()
 console = Console(log_path=False)
 
 
-def update_progress(progress, task, op_code, cur_count, max_count=None, message=""):
-    if max_count is not None:
-        progress.update(task, total=max_count, start=True)
-
+def update_progress(status, prefix, op_code, cur_count, max_count=None, message=""):
     if message != "":
-        progress.update(task, completed=cur_count, description=f"Updating: {message}")
-    else:
-        progress.update(task, completed=cur_count)
+        status.update(f"{prefix}: {message}")
 
 
 @root.command("sync")
@@ -55,16 +50,14 @@ def rice_sync():
         )
         return
 
-    with Progress(console=console, transient=True, expand=True) as progress:
-        task = progress.add_task("Pulling changes", start=False)
-        task = progress.add_task("Pushing changes", start=False)
-
+    with console.status("Merging remote") as status:
         repo.remotes.origin.pull(
-            progress=functools.partial(update_progress, progress, task)
+            progress=functools.partial(update_progress, status, "Merging remote")
         )
 
+    with console.status("Pushing changes") as status:
         repo.remotes.origin.push(
-            progress=functools.partial(update_progress, progress, task)
+            progress=functools.partial(update_progress, status, "Pushing changes")
         )
 
 
