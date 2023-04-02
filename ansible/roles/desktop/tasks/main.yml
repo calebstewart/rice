@@ -20,6 +20,8 @@
       - alacritty
       - gammastep
       - brightnessctl
+      - linux-libertine-fonts
+      - google-noto-emoji-color-fonts
     state: present
 - name: Install Desktop Configurations
   ansible.builtin.copy:
