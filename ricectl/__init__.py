@@ -3,16 +3,18 @@
 # Description: Control rice setup, installation, and upgrading
 # Usage: ricectl.py command [options...]
 # Author: Caleb Stewart <caleb.stewart94@gmail.com>
-import json
-import subprocess
+from typing import List
+from pathlib import Path
+import functools
 
 import typer
-from git.repo import Repo
 from git.remote import FetchInfo
+from git.repo import Repo
 from rich.console import Console
 from rich.progress import Progress
+from rich.table import Table
 
-from ricectl.config import Config
+from ricectl.config import Config, Tag
 
 # Root typer application
 root = typer.Typer(help="Manage RICE installation, update and synchronization")
@@ -24,6 +26,16 @@ config = Config()
 
 # Create a global console instance
 console = Console(log_path=False)
+
+
+def update_progress(progress, task, op_code, cur_count, max_count=None, message=""):
+    if max_count is not None:
+        progress.update(task, total=max_count, start=True)
+
+    if message != "":
+        progress.update(task, completed=cur_count, description=f"Updating: {message}")
+    else:
+        progress.update(task, completed=cur_count)
 
 
 @root.command("sync")
@@ -44,21 +56,16 @@ def rice_sync():
         return
 
     with Progress(console=console, transient=True, expand=True) as progress:
+        task = progress.add_task("Pulling changes", start=False)
+        task = progress.add_task("Pushing changes", start=False)
 
-        task = progress.add_task("Updating")
+        repo.remotes.origin.pull(
+            progress=functools.partial(update_progress, progress, task)
+        )
 
-        def update_progress(op_code, cur_count, max_count=None, message=""):
-            if max_count is not None:
-                progress.update(task, total=max_count)
-
-            if message != "":
-                progress.update(
-                    task, completed=cur_count, description=f"Updating: {message}"
-                )
-            else:
-                progress.update(task, completed=cur_count)
-
-        repo.remotes.origin.pull(progress=update_progress)
+        repo.remotes.origin.push(
+            progress=functools.partial(update_progress, progress, task)
+        )
 
 
 @root.command("apply")
@@ -81,18 +88,63 @@ def rice_update():
 def rice_status():
     """Retrieve the current state of the RICE repository"""
 
+    repo = Repo(config.repo)
 
-@root.command("help")
-def rice_help():
-    """Print detailed documentation/help information"""
+    table = Table(
+        "icon",
+        "comment",
+        box=None,
+        pad_edge=False,
+        show_header=False,
+        show_footer=False,
+        highlight=True,
+    )
+
+    repo_path = config.repo.absolute()
+    if repo_path.is_relative_to(Path.home()):
+        repo_path = "$HOME/" + str(repo_path.relative_to(Path.home()))
+
+    table.add_row(
+        ":rice:",
+        f"respository at [cyan]{repo_path}[/cyan] on [blue]{repo.active_branch.name}[/blue]@[green]{repo.active_branch.commit.hexsha[:7]}[/green] ([dim]{repo.active_branch.commit.summary}[/dim])",
+    )
+
+    if config.tags:
+        table.add_row(":label:", f"using tags {list(config.tags)}")
+
+    if config.pending:
+        table.add_row(
+            ":warning:",
+            "pending changes waiting for application (use [dim]`ricectl apply`[/dim])",
+        )
+    if repo.is_dirty():
+        table.add_row(
+            ":warning:",
+            "repository has local changes or commits (use [dim]`ricectl sync`[/dim])",
+        )
+
+    console.print(table)
 
 
-@config_app.command("set")
-def config_set(param: str, value: str):
-    """Set a value in the RICE configuration. The parameter name
-    must exist in the configuration, and the value will be parsed
-    into the requisite type. If the value is not valid, nothing is
-    changed."""
+@root.command("add-tag")
+def rice_add_tag(tags: List[Tag]):
+    """Add a new tag for this host. These tags are passed to Ansible on the
+    next call to apply, and may modify your configuration."""
+
+    config.tags |= set(tags)
+    config.pending = True
+    config.save()
+
+
+@root.command("remove-tag")
+def rice_remove_tag(tags: List[Tag]):
+    """Remove a tag from this host. Removing tags does not necessarily make
+    any new changes to your system or remove the changes added by the tag,
+    but does stop those changes from being made during apply operations."""
+
+    config.tags -= set(tags)
+    config.pending = True
+    config.save()
 
 
 if __name__ == "__main__":

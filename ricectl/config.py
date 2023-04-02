@@ -1,9 +1,19 @@
 from pathlib import Path
-from typing import Dict, Any
+from typing import Dict, Any, Set, Optional
+from enum import Enum
+import json
 
 from pydantic import BaseSettings
 import toml
 from xdg_base_dirs import xdg_config_home, xdg_config_dirs
+
+
+class Tag(str, Enum):
+    """Known ansible tags"""
+
+    LAPTOP = "laptop"
+    MACBOOK = "macbook"
+    FRAMEWORK = "framework"
 
 
 class Config(BaseSettings):
@@ -11,6 +21,29 @@ class Config(BaseSettings):
 
     repo: Path = Path("/opt/rice")
     """ The location where the rice repo lives """
+    tags: Set[str] = set()
+    """ List of tags to use when applying Ansible Playbooks """
+    pending: bool = False
+    """ Whether there is a pending apply operation (e.g. tags were modified) """
+
+    @classmethod
+    def locate_config(cls) -> Path:
+
+        for path in [xdg_config_home(), *list(xdg_config_dirs())]:
+            cfg_path = path / "rice" / "config.toml"
+            if cfg_path.is_file():
+                return cfg_path
+
+        return xdg_config_home() / "rice" / "config.toml"
+
+    def save(self):
+        """Save the current configuration to the user config directory"""
+
+        cfg_path = Config.locate_config()
+        cfg_path.parent.mkdir(parents=True, exist_ok=True)
+
+        with cfg_path.open("w") as filp:
+            toml.dump(json.loads(self.json()), filp)
 
     class Config:
         env_prefix = "RICE_"
