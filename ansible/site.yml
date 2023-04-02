@@ -2,8 +2,10 @@
 - name: RICEy Boi
   hosts: localhost
   roles:
-    - common
-    - desktop
+    - role: common
+      tags: [core]
+    - role: desktop
+      tags: [core]
 #     - role: laptop
 #       tags: [laptop]
 #     - virtualization

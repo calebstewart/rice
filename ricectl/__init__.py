@@ -79,19 +79,16 @@ def rice_apply():
         f"Executing [cyan]ansible-playbook[/cyan] with tags {list(config.tags)}"
     )
 
+    tags = {"core"}
+    tags |= config.tags
+
     arguments = [
         venv_bin / "ansible-playbook",
         "--ask-become-pass",
+        "--tags",
+        ",".join([str(x) for x in config.tags]),
         "site.yml",
     ]
-
-    if config.tags:
-        arguments.extend(
-            [
-                "--tags",
-                ",".join([str(x) for x in config.tags]),
-            ]
-        )
 
     try:
         subprocess.run(arguments, cwd=config.repo / "ansible", check=True)
