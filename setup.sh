@@ -56,7 +56,7 @@ echo "[+] install Ansible Galaxy gantsign.oh-my-zsh role"
 # Setup an initial user configuration with the repo location
 if ! [ -f "$HOME/.config/rice/config.toml" ]; then
   mkdir -p "$HOME/.config/rice"
-  echo -e 'repo = "'"$CLONE_PATH"'"\ntags = ["core",]' > "$HOME/.config/rice/config.toml"
+  echo -e 'repo = "'"$CLONE_PATH"'"\ntags = ["core",]\npending = true' > "$HOME/.config/rice/config.toml"
 fi
 
 # Show the status after installation
