@@ -89,6 +89,8 @@ def rice_apply():
 
     try:
         subprocess.run(arguments, cwd=config.repo / "ansible", check=True)
+        config.pending = False
+        config.save()
     except subprocess.CalledProcessError as exc:
         console.log("[red]error[/red]: [cyan]ansible-playbook[/cyan] failed")
 
