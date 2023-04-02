@@ -58,10 +58,10 @@ def rice_sync():
             progress=functools.partial(update_progress, status, "Merging remote")
         )
 
-    with console.status("Pushing changes") as status:
-        repo.remotes.origin.push(
-            progress=functools.partial(update_progress, status, "Pushing changes")
-        )
+    # with console.status("Pushing changes") as status:
+    #     repo.remotes.origin.push(
+    #         progress=functools.partial(update_progress, status, "Pushing changes")
+    #     )
 
 
 @root.command("apply")
