@@ -3,15 +3,16 @@
 # Description: Control rice setup, installation, and upgrading
 # Usage: ricectl.py command [options...]
 # Author: Caleb Stewart <caleb.stewart94@gmail.com>
-from typing import List
-from pathlib import Path
 import functools
+import subprocess
+import sys
+from pathlib import Path
+from typing import List
 
 import typer
 from git.remote import FetchInfo
 from git.repo import Repo
 from rich.console import Console
-from rich.progress import Progress
 from rich.table import Table
 
 from ricectl.config import Config, Tag
@@ -64,6 +65,35 @@ def rice_sync():
 @root.command("apply")
 def rice_apply():
     """Apply the current state of the RICE using Ansible"""
+
+    venv_bin = Path(sys.executable).parent
+    if not (venv_bin / "ansible-playbook").is_file():
+        console.log(
+            f"[red]error[/red]: unable to find [cyan]ansible-playbook[/cyan] in [blue]{venv_bin}[/blue]"
+        )
+        return
+
+    console.log(
+        f"Executing [cyan]ansible-playbook[/cyan] with tags {list(config.tags)}"
+    )
+
+    try:
+        subprocess.run(
+            [
+                venv_bin / "ansible-playbook",
+                "--ask-become-pass",
+                "--tags",
+                ",".join([str(x) for x in config.tags]),
+                "site.yml",
+            ],
+            cwd=config.repo / "ansible",
+            stdin=subprocess.PIPE,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            check=True,
+        )
+    except subprocess.CalledProcessError as exc:
+        console.log("[red]error[/red]: [cyan]ansible-playbook[/cyan] failed")
 
 
 @root.command("update")
