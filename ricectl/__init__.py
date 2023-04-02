@@ -8,12 +8,14 @@ import subprocess
 import sys
 from pathlib import Path
 from typing import List
+import tempfile
 
 import typer
 from git.remote import FetchInfo
 from git.repo import Repo
 from rich.console import Console
 from rich.table import Table
+import ansible_runner
 
 from ricectl.config import Config, Tag
 
@@ -62,6 +64,11 @@ def rice_sync():
         )
 
 
+def ansible_event_handler(status, event):
+    console.print(event)
+    return True
+
+
 @root.command("apply")
 def rice_apply():
     """Apply the current state of the RICE using Ansible"""
@@ -77,33 +84,14 @@ def rice_apply():
         f"Executing [cyan]ansible-playbook[/cyan] with tags {list(config.tags)}"
     )
 
-    arguments = [
-        venv_bin / "ansible-playbook",
-        "--ask-become-pass",
-        "site.yml",
-    ]
-
-    if config.tags:
-        arguments.extend(
-            [
-                "--tags",
-                ",".join([str(x) for x in config.tags]),
-            ]
-        )
-
-    console.log(f"  Commandline: {arguments}")
-
-    try:
-        subprocess.run(
-            arguments,
-            cwd=config.repo / "ansible",
-            stdin=subprocess.PIPE,
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            check=True,
-        )
-    except subprocess.CalledProcessError as exc:
-        console.log("[red]error[/red]: [cyan]ansible-playbook[/cyan] failed")
+    with tempfile.TemporaryDirectory(prefix="rice") as tmpdir:
+        with console.status("ansible: working...") as status:
+            ansible_runner.run(
+                private_data_dir=tmpdir,
+                playbook="site.yml",
+                event_handler=functools.partial(ansible_event_handler, status),
+                project_dir=str(config.repo / "ansible"),
+            )
 
 
 @root.command("update")

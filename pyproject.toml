@@ -18,6 +18,7 @@ pydantic = "^1.10.7"
 xdg-base-dirs = "^6.0.0"
 toml = "^0.10.2"
 rich = "<13.0.0"
+ansible-runner = "^2.3.2"
 
 [tool.poetry.scripts]
 ricectl = "ricectl:root"
