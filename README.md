@@ -1,64 +1,66 @@
 # Fedora RICE Scripts
-This repository houses my automated configuration and setup scripts for Fedora.
-The project was motivated by setting up laptops where I often use Fedora. This
-allows me to wipe my laptop, but get back up and running comfortably quickly and
-easily.
+RICE scripts for configuring a Fedora desktop environment.
 
-## Assumptions
-The main component to this repository is an Ansible playbook which sets up my
-system in a repeatable and comfortable way with SwayWM, and all the custom
-bells and whistles I'm used to.
+## Overview
+This repo houses two components: an Ansible playbook and a command line utility.
+The Ansible playbook is responsible for doing 98% of the configuration and
+installation on the system. The `core` tag will setup some common tooling, the
+SwayWM window manager with all my presets and scripts, and a functioning
+development environment. Other tags may or may not be available for special
+situations such as a laptop or macbook specific hardware configuration.
 
-I'm not going to list out every piece of software I install. If you're curious,
-you can check out the Ansible playbook for more details.
-
-The playbook assumes you have installed Fedora (most likely Workstation) with
-the default ISO. This means Gnome/GDM is by default the DM/WM. Ansible will
-install and configure SwayWM, but you will need to manually select Sway from
-the GDM login screen the first time after installation. I keep GDM since it's
-the cleanest DM around, and is already installed by Fedora Workstation by default.
-
-I explicitly do not attempt to remove Gnome and keep GDM, because removing Gnome
-normally causes lots of harm. This is annoying, but not the end of the world.
+The command line utility is called `ricectl` and is meant to make the process
+of iteratively applying and updating the RICE configuration and tools easier.
+The `ricectl` command can be used to easily execute Ansible, update the
+local RICE repository, and add/remove ansible tags.
 
 ## Installation
-Installation is intended to be as simple as possible. On a base installation,
-simply login and run the following:
+The installation process is expected to be run on a fresh installation of
+Fedora. I have tested this from a default Fedora Workstation ISO in Gnome, but
+it should in theory work from other spins or builds as well. Simply login to
+the system, start a terminal and run the following:
 
 ``` sh
 curl https://raw.githubusercontent.com/calebstewart/rice/main/setup.sh | sh
 ```
 
-I normally detest `curl | sh` type installation commands, but seeing as this
-is my own tool hosted in my own repository, I've decided to ignore my inclinations.
+> NOTE: You should not run this with `sudo`. Instead, the setup script will use `sudo`
+>       when needed, and mark log entries requiring administrative access with `SUDO`.
 
-> NOTE: **This script should not be run with `sudo`!** The script will clone and
->       setup the RICE repo within your user's home directory, and use `sudo`
->       itself only when needed (e.g. installing software).
+The setup script will ensure we have Python and git installed, and then clone
+the RICE repository to `$HOME/.local/share/rice`. Next, it will setup a virtual
+environment in `$HOME/.local/share/rice/env` for installing Ansible and `ricectl`.
 
-This script will do the following:
-1. Install `git`, `python3`, `python3-pip` and `python3-venv`.
-2. Clone this repository to `$HOME/.local/share/rice`.
-3. Create a Python virtual environment to `$HOME/.local/share/rice/env`.
-4. Install the `ricectl` package to the new environment.
-5. Symlink the `ricectl` binary to `/usr/local/bin/ricectl`.
-6. Install completion scripts for the current shell for `ricectl`.
-6. If no config exists, a base configuration is installed to `$HOME/.config/rice/config.toml`.
+After the `ricectl` and `ansible` packages are installed, the script will symlink
+the `ricectl` binary to `/usr/local/bin` so that you have access to it normally.
 
-The setup script will not automatically run Ansible. This is because the user may
-want to configure extra Ansible tags or other changes before applying the playbook.
-At this point, you
+The last thing the setup script does is run `ricectl status`, which will show the
+current commit and tags that you have configured. At this point, you can add or
+remove tags with the `ricectl add-tag` and `ricectl remove-tag` commands.
 
-## Initial Setup
-After installing the `ricectl` command, you can use the `ricectl config` commands
-to customize your installation before applying the Ansible playbook. Once you have
-configured your installation, you can use the following command to apply the
-Ansible playbook:
+Once you have configured your tags, you are ready to apply the Ansible playbook!
+Simply the following to kick off ansible. You will be prompted for the `BECOME`
+password, which is your user password, which is used to elevate permissions as
+needed.
 
 ``` sh
 ricectl apply
 ```
 
-This command will execute Ansible with your configured tags and install/configure
-all requried software. After setup, it is recommended that you either reboot or
-fully logout.
+## Updating (pulling changes)
+For system packages, the `ricectl apply` command will perform a full `dnf` upgrade.
+You can update the `ricectl` command itself and the Ansible playbooks with the
+`ricectl sync` command.
+
+## Pushing Changes
+If you have made modifications to the ansible playbook, and want to push those
+changes back to the remote repository, you'll need to navigate to
+`$HOME/.local/share/rice`, make a commit, and push using standard `git` commands.
+You will have to authenticate to GitHub. By default, the `setup.sh` script clones
+the repository with `https`, but you can change the URL to use SSH (and therefore
+SSH keys) with this command:
+
+``` sh
+cd ~/.local/share/rice
+git remote set-url origin git@github.com:calebstewart/rice.git
+```
