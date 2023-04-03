@@ -32,7 +32,7 @@
     repo: "https://github.com/doomemacs/doomemacs"
     depth: 1
 - name: Install Doom Emacs
-  ansible.builtin.shell: "{{ ansible_env.HOME }}/.config/emacs/bin/doom install"
+  ansible.builtin.shell: "{{ ansible_env.HOME }}/.config/emacs/bin/doom install --env --install --fonts --hooks --force --doomdir {{ ansible_env.HOME }}/.config/doom"
 - name: Install zsh custom script
   ansible.builtin.copy:
     src: files/100-development.zsh
