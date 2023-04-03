@@ -69,4 +69,6 @@
   become: true
   ansible.builtin.dnf:
     name: 'https://s3.amazonaws.com/session-manager-downloads/plugin/latest/linux_64bit/session-manager-plugin.rpm'
+    # NOTE: i don't like this, but it seems the RPM isn't signed
+    disable_gpg_check: true
     state: present
