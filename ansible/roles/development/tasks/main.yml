@@ -1,0 +1,71 @@
+---
+- name: Install Development Tools
+  become: true
+  ansible.builtin.dnf:
+    name:
+      - emacs
+      - golang
+      - poetry
+      - black
+      - rbenv
+      - gpg
+      - '@Development tools'
+    state: present
+- name: Install Python Packages
+  ansible.builtin.pip:
+    executable: "/usr/bin/pip"
+    name:
+      - pyright
+      - isort
+- name: Install Golang LSP Server
+  ansible.builtin.shell: "go install golang.org/x/tools/gopls@latest"
+- name: Install Doom Emacs Config
+  ansible.builtin.copy:
+    src: files/doom
+    dest: "{{ ansible_env.HOME }}/.config/"
+    owner: "{{ ansible_env.USER }}"
+    group: "{{ ansible_env.USER }}"
+    mode: preserve
+- name: Clone Doom Emacs
+  ansible.builtin.git:
+    dest: "{{ ansible_env.HOME }}/.config/emacs"
+    repo: "https://github.com/doomemacs/doomemacs"
+    depth: 1
+- name: Install Doom Emacs
+  ansible.builtin.shell: "{{ ansible_env.HOME }}/.config/emacs/bin/doom install"
+- name: Install zsh custom script
+  ansible.builtin.copy:
+    src: files/100-development.zsh
+    dest: "{{ ansible_env.HOME }}/.oh-my-zsh/custom/"
+    owner: "{{ ansible_env.USER }}"
+    group: "{{ ansible_env.USER }}"
+    mode: preserve
+- name: Download AWS CLI installer
+  ansible.builtin.get_url:
+    url: "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip"
+    dest: "/tmp/awscliv2.zip"
+- name: Download AWS CLI signature
+  ansible.builtin.get_url:
+    url: "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip.sig"
+    dest: "/tmp/awscliv2.zip.sig"
+- name: Copy AWS CLI public key
+  ansible.builtin.copy:
+    src: files/awscli-pubkey.pub
+    dest: "/tmp/awscli-pubkey.pub"
+    mode: preserve
+- name: Verify AWS CLI Installer
+  ansible.builtin.shell: |
+    gpg --import /tmp/awscli-pubkey.pub
+    gpg --verify /tmp/awscliv2.zip.sig /tmp/awscliv2.zip
+- name: Unzip awscli Installer
+  ansible.builtin.unarchive:
+    src: /tmp/awscliv2.zip
+    dest: /tmp
+    copy: false
+- name: Install AWS CLI
+  become: true
+  ansible.builtin.shell: /tmp/aws/install
+- name: Install AWS Session Manager Plugin
+  ansible.builtin.dnf:
+    name: 'https://s3.amazonaws.com/session-manager-downloads/plugin/latest/linux_64bit/session-manager-plugin.rpm'
+    state: present
