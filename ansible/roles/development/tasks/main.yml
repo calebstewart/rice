@@ -66,6 +66,7 @@
   become: true
   ansible.builtin.shell: /tmp/aws/install
 - name: Install AWS Session Manager Plugin
+  become: true
   ansible.builtin.dnf:
     name: 'https://s3.amazonaws.com/session-manager-downloads/plugin/latest/linux_64bit/session-manager-plugin.rpm'
     state: present
