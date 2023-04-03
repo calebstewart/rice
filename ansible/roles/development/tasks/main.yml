@@ -64,7 +64,7 @@
     copy: false
 - name: Install AWS CLI
   become: true
-  ansible.builtin.shell: /tmp/aws/install
+  ansible.builtin.shell: /tmp/aws/install --update
 - name: Install AWS Session Manager Plugin
   become: true
   ansible.builtin.dnf:
