@@ -10,5 +10,6 @@
 #       tags: [laptop]
 #     - virtualization
 #     - containers
-    - development
+    - role: development
+      tags: [development]
 #     - reverse_engineering
