@@ -19,7 +19,8 @@ set $right l
 set $term alacritty
 
 # Application launcher
-set $menu wofi --show drun --allow-images --insensitive
+set $menu wofi --show drun --allow-images --insensitive --prompt "Start an application..."
+set $run_menu wofi --show run --prompt "Execute a binary..."
 
 # Locker
 set $locker swaylock
@@ -82,6 +83,7 @@ input "type:touchpad" {
 
     # Start your launcher
     bindsym $mod+d exec $menu
+    bindsym $mod+Shift+d exec $run_menu
 
     # Show the notification center
     bindsym $mod+Shift+n exec swaync-client -t -sw
