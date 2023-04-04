@@ -6,11 +6,13 @@
     state: enabled
     name: erikreider/SwayNotificationCenter
 - name: Add Brave Browser Repository
+  become: true
   ansible.builtin.yum_repository:
     baseurl: "https://brave-browser-rpm-release.s3.brave.com/brave-browser.repo"
     name: "Brave Browser"
     description: "YUM Repo For Brave Browser"
 - name: Import Brave Browser Public Key
+  become: true
   ansible.builtin.rpm_key:
     state: present
     key: "https://brave-browser-rpm-release.s3.brave.com/brave-core.asc"
