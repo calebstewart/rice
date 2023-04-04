@@ -8,14 +8,13 @@ import subprocess
 import sys
 from pathlib import Path
 from typing import List
-import tempfile
 
 import typer
 from git.remote import FetchInfo
 from git.repo import Repo
 from rich.console import Console
-from rich.table import Table
-import ansible_runner
+from rich.table import Table, box
+from rich.prompt import Prompt, Confirm
 
 from ricectl.config import Config, Tag
 
@@ -40,28 +39,41 @@ def update_progress(status, prefix, op_code, cur_count, max_count=None, message=
 def rice_sync():
     """Synchronize the RICE repository with remote"""
 
-    # Load the repository
-    repo = Repo(config.repo)
-
-    infos = repo.remotes.origin.fetch()
-    for info in infos:
-        if (info.flags & FetchInfo.HEAD_UPTODATE) != 0:
-            break
-    else:
-        console.log(
-            f"Already up-to-date on {repo.active_branch.name}@{repo.active_branch.commit.hexsha[:7]} ({repo.active_branch.commit.summary})"
-        )
+    # Pull any new changes
+    try:
+        subprocess.run(["git", "pull"], cwd=config.repo, check=True)
+    except subprocess.CalledProcessError:
+        console.log(f"[red]error[/red]: 'git pull' failed")
         return
 
-    with console.status("Merging remote") as status:
-        repo.remotes.origin.pull(
-            progress=functools.partial(update_progress, status, "Merging remote")
+    try:
+        proc = subprocess.run(
+            ["git", "log", "origin/main..HEAD", f"--pretty=tformat:%H\t%s"],
+            cwd=config.repo,
+            check=True,
+            stdout=subprocess.PIPE,
         )
+        pending_commits = [
+            line.decode("utf-8").split(" ", maxsplit=1)
+            for line in proc.stdout.splitlines()
+            if line
+        ]
 
-    # with console.status("Pushing changes") as status:
-    #     repo.remotes.origin.push(
-    #         progress=functools.partial(update_progress, status, "Pushing changes")
-    #     )
+        table = Table("Hash", "Message", title="Pending Commits", box=box.MINIMAL)
+        for hash, message in pending_commits:
+            table.add_row(hash[:7], message)
+        console.print(table)
+
+        if pending_commits and Confirm.ask("Push pending commits?", console=console):
+            try:
+                subprocess.run(["git", "push"], cwd=config.repo, check=True)
+                console.log("pending commits published to repository")
+            except subprocess.CalledProcessError:
+                console.log(f"[red]error[/red]: failed to push pending commits")
+    except subprocess.CalledProcessError:
+        console.log(f"[red]error[/red]: failed to enumerate pending commits")
+
+    console.log("rice update successful")
 
 
 @root.command("apply")
