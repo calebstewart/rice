@@ -39,52 +39,112 @@ def update_progress(status, prefix, op_code, cur_count, max_count=None, message=
 def rice_sync():
     """Synchronize the RICE repository with remote"""
 
-    # Pull any new changes
     try:
-        subprocess.run(["git", "pull"], cwd=config.repo, check=True)
+        # Ensure the remote is up-to-date
+        subprocess.run(
+            ["git", "remote", "update", "origin"], cwd=config.repo, check=True
+        )
     except subprocess.CalledProcessError:
-        console.log(f"[red]error[/red]: 'git pull' failed")
+        console.log("[red]error[/red]: failed to fetch remote changes")
+
+    try:
+        # Find the tip of the current branch
+        proc = subprocess.run(
+            ["git", "rev-parse", "@"],
+            cwd=config.repo,
+            stdout=subprocess.PIPE,
+            check=True,
+        )
+        local_tip = proc.stdout.strip()
+    except subprocess.CalledProcessError:
+        console.log(f"[red]error[/red]: failed to get local head")
         return
 
     try:
+        # Find the tip of the upstream branch
         proc = subprocess.run(
-            ["git", "log", "origin/main..HEAD", f"--pretty=tformat:%H\t%s"],
+            ["git", "rev-parse", "@{u}"],
             cwd=config.repo,
-            check=True,
             stdout=subprocess.PIPE,
+            check=True,
         )
-        pending_commits = [
-            line.decode("utf-8").split("\t", maxsplit=1)
-            for line in proc.stdout.splitlines()
-            if line
-        ]
-
-        table = Table(
-            "indent",
-            Column("hash", style="cyan"),
-            Column("summary", style="italic dim"),
-            box=None,
-            pad_edge=False,
-            show_header=False,
-            show_footer=False,
-            highlight=True,
-        )
-        for hash, message in pending_commits:
-            table.add_row("  ", hash[:7], message)
-
-        console.print("Pending local commits:")
-        console.print(table)
-
-        if pending_commits and Confirm.ask("Push pending commits?", console=console):
-            try:
-                subprocess.run(["git", "push"], cwd=config.repo, check=True)
-                console.log("pending commits published to repository")
-            except subprocess.CalledProcessError:
-                console.log(f"[red]error[/red]: failed to push pending commits")
+        remote_tip = proc.stdout.strip()
     except subprocess.CalledProcessError:
-        console.log(f"[red]error[/red]: failed to enumerate pending commits")
+        console.log(f"[red]error[/red]: failed to get remote head")
+        return
+
+    try:
+        # Find the base between the current and upstream branches
+        proc = subprocess.run(
+            ["git", "merge-base", "@", "@{u}"],
+            cwd=config.repo,
+            stdout=subprocess.PIPE,
+            check=True,
+        )
+        base = proc.stdout.strip()
+    except subprocess.CalledProcessError:
+        console.log(f"[red]error[/red]: failed to get base commit")
+        return
+
+    # yay, no changes!
+    if local_tip == remote_tip:
+        console.log(f"Repository up to date.")
+        return
+
+    # We've either diverged in two directions or just have pending remote updates.
+    if local_tip == base or remote_tip != base:
+        console.log("Pulling new remote commits...")
+        try:
+            subprocess.run(["git", "pull"], cwd=config.repo, check=True)
+            # Set the pending flag for the new changes
+            config.pending = True
+        except subprocess.CalledProcessError:
+            console.log(f"[red]error[/red]: 'git pull' failed")
+            return
+
+    # Either diverged in two directions or have local changes to push...
+    if remote_tip == base or local_tip != base:
+        console.log("Found pending local commits:")
+        try:
+            proc = subprocess.run(
+                ["git", "log", "origin/main..HEAD", f"--pretty=tformat:%H\t%s"],
+                cwd=config.repo,
+                check=True,
+                stdout=subprocess.PIPE,
+            )
+            pending_commits = [
+                line.decode("utf-8").split("\t", maxsplit=1)
+                for line in proc.stdout.splitlines()
+                if line
+            ]
+
+            table = Table(
+                "indent",
+                Column("hash", style="cyan"),
+                Column("summary", style="italic dim"),
+                box=None,
+                pad_edge=False,
+                show_header=False,
+                show_footer=False,
+                highlight=True,
+            )
+            for hash, message in pending_commits:
+                table.add_row("  ", hash[:7], message)
+            console.print(table)
+
+            if pending_commits and Confirm.ask(
+                "Push pending commits?", console=console
+            ):
+                try:
+                    subprocess.run(["git", "push"], cwd=config.repo, check=True)
+                    console.log("pending commits published to repository")
+                except subprocess.CalledProcessError:
+                    console.log(f"[red]error[/red]: failed to push pending commits")
+        except subprocess.CalledProcessError:
+            console.log(f"[red]error[/red]: failed to enumerate pending commits")
 
     console.log("rice update successful")
+    config.save()
 
 
 @root.command("apply")
