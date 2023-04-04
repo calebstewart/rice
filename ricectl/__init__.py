@@ -13,7 +13,7 @@ import typer
 from git.remote import FetchInfo
 from git.repo import Repo
 from rich.console import Console
-from rich.table import Table, box
+from rich.table import Table, box, Column
 from rich.prompt import Prompt, Confirm
 
 from ricectl.config import Config, Tag
@@ -54,14 +54,25 @@ def rice_sync():
             stdout=subprocess.PIPE,
         )
         pending_commits = [
-            line.decode("utf-8").split(" ", maxsplit=1)
+            line.decode("utf-8").split("\t", maxsplit=1)
             for line in proc.stdout.splitlines()
             if line
         ]
 
-        table = Table("Hash", "Message", title="Pending Commits", box=box.MINIMAL)
+        table = Table(
+            "indent",
+            Column("hash", style="cyan"),
+            Column("summary", style="italic dim"),
+            box=None,
+            pad_edge=False,
+            show_header=False,
+            show_footer=False,
+            highlight=True,
+        )
         for hash, message in pending_commits:
-            table.add_row(hash[:7], message)
+            table.add_row("  ", hash[:7], message)
+
+        console.print("Pending local commits:")
         console.print(table)
 
         if pending_commits and Confirm.ask("Push pending commits?", console=console):
