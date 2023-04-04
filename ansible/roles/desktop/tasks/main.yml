@@ -22,7 +22,40 @@
       - brightnessctl
       - linux-libertine-fonts
       - google-noto-emoji-color-fonts
+      - fontawesome-fonts
+      - fontawesome-fonts-web
+      - fontawesome5-fonts
+      - fontawesome5-free-fonts
+      - firefox
     state: present
+- name: Install mozprofile tool
+  ansible.builtin.pip:
+    executable: "/usr/bin/pip"
+    name:
+      - mozprofile
+- name: Setup Firefox Profiles
+  ansible.builtin.shell: |
+    firefox -no-remote -CreateProfile "Personal {{ ansible_env.HOME }}/.mozilla/firefox/personal.profile"
+    firefox -no-remote -CreateProfile "Work {{ ansible_env.HOME }}/.mozilla/firefox/work.profile"
+
+    mozprofile --profile "{{ ansible_env.HOME }}/.mozilla/firefox/personal.profile" \
+                --addon="https://github.com/passff/passff/releases/download/1.14.1/passff.xpi" \
+                --pref="extension.activeThemeID:firefox-compact-dark@mozilla.org"
+    mozprofile --profile "{{ ansible_env.HOME }}/.mozilla/firefox/work.profile" \
+                --addon="https://addons.mozilla.org/firefox/downloads/file/4088441/lastpass_password_manager-4.112.0.2.xpi" \
+                --addon="https://addons.mozilla.org/firefox/downloads/file/4062676/colorways_innovator_bold-1.0.xpi"
+    mozprofile --profile "{{ ansible_env.HOME }}/.mozilla/firefox/work.profile" \
+                --pref="extension.activeThemeID:innovator-bold-colorway@mozilla.org"
+- name: Installing Firefox Personal Shortcut
+  ansible.builtin.copy:
+    src: "files/firefox-personal.desktop"
+    dest: "{{ ansible_env.HOME }}/.local/share/applications/"
+    mode: preserve
+- name: Installing Firefox Work Shortcut
+  ansible.builtin.copy:
+    src: "files/firefox-personal.desktop"
+    dest: "{{ ansible_env.HOME }}/.local/share/applications/"
+    mode: preserve
 - name: Install Desktop Configurations
   ansible.builtin.copy:
     src: files/config/
