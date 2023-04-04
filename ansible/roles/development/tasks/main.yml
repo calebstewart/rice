@@ -26,13 +26,25 @@
     owner: "{{ ansible_env.USER }}"
     group: "{{ ansible_env.USER }}"
     mode: preserve
+- name: Check for Doom Emacs
+  ansible.builtin.stat:
+    path: "{{ ansible_env.HOME }}/.config/emacs/bin/doom"
+  register: doom_check
+- name: Update Doom
+  ansible.builtin.shell: "{{ ansible_env.HOME }}/.config/emacs/bin/doom upgrade --force"
+  when: doom_check.stat.exists
+- name: Synchronize Doom Configuration
+  ansible.builtin.shell: "{{ ansible_env.HOME }}/.config/emacs/bin/doom sync"
+  when: doom_check.stat.exists
 - name: Clone Doom Emacs
   ansible.builtin.git:
     dest: "{{ ansible_env.HOME }}/.config/emacs"
     repo: "https://github.com/doomemacs/doomemacs"
     depth: 1
+  when: not doom_check.stat.exists
 - name: Install Doom Emacs
   ansible.builtin.shell: "{{ ansible_env.HOME }}/.config/emacs/bin/doom install --env --install --fonts --hooks --force --doomdir {{ ansible_env.HOME }}/.config/doom"
+  when: not doom_check.stat.exists
 - name: Install zsh custom script
   ansible.builtin.copy:
     src: files/100-development.zsh
