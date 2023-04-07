@@ -38,6 +38,10 @@
       - fontawesome5-free-fonts
       - brave-browser
     state: present
+- name: Install Desktop Flatpaks
+  community.general.flatpak:
+    name:
+      - org.signal.Signal
 - name: Check if Browserpass Native Exists
   ansible.builtin.stat:
     path: /usr/bin/browserpass-linux64
