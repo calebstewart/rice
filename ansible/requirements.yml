@@ -1,4 +1,5 @@
 ---
 collections:
   - ovirt.ovirt
+roles:
   - gantsign.oh-my-zsh
