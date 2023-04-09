@@ -19,6 +19,7 @@
       - dejavu-sans-mono-fonts
       - pipewire-devel
       - libsamplerate-devel
+      - pulseaudio-libs-devel
       - dkms
       - kernel-devel
       - kernel-headers
