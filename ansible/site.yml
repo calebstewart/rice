@@ -12,4 +12,6 @@
 #     - containers
     - role: development
       tags: [development]
+    - role: ryzen
+      tags: [ryzen]
 #     - reverse_engineering

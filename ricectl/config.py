@@ -16,6 +16,7 @@ class Tag(str, Enum):
     MACBOOK = "macbook"
     FRAMEWORK = "framework"
     DEVELOPMENT = "development"
+    RYZEN = "ryzen"
 
 
 class Config(BaseSettings):
