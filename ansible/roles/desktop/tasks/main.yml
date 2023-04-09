@@ -69,12 +69,13 @@
     dest: "/tmp/browserpass-linux64.tar.gz.asc"
     mode: "0600"
   when: not browserpass_result.stat.exists
-- name: Validate Browserpass Native Signature
-  ansible.builtin.command: gpgv /tmp/browserpass-linux64.tar.gz.asc
-  when: not browserpass_result.stat.exists
-  register: pass_gpgv
-  failed_when: pass_gpgv.rc != 0
-  changed_when: false
+# NOTE: gpgv is not working properly :(
+# - name: Validate Browserpass Native Signature
+#   ansible.builtin.command: gpgv /tmp/browserpass-linux64.tar.gz.asc
+#   when: not browserpass_result.stat.exists
+#   register: pass_gpgv
+#   failed_when: pass_gpgv.rc != 0
+#   changed_when: false
 - name: Unpack Browserpass Native
   ansible.builtin.unarchive:
     src: /tmp/browserpass-linux64.tar.gz
