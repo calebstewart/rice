@@ -43,6 +43,13 @@
   args:
     chdir: "{{ ansible_env.HOME }}/.local/src/LookingGlass/client/build"
   when: lg_clone.after != lg_clone.before
+- name: "Install Looking Glass Configuration"
+  ansible.builtin.copy:
+    src: "files/looking-glass"
+    dest: "{{ ansible_env.HOME }}/.config/"
+    mode: preserve
+    owner: "{{ ansible_env.USER }}"
+    group: "{{ ansible_env.USER }}"
 - name: "Install Looking Glass Client Icon"
   ansible.builtin.file:
     src: "{{ ansible_env.HOME }}/.local/src/LookingGlass/resources/icon-128x128.png"
