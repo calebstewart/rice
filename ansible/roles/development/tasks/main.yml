@@ -17,6 +17,7 @@
     name:
       - pyright
       - isort
+      - localstack
 - name: Install Golang LSP Server
   ansible.builtin.command: "go install golang.org/x/tools/gopls@latest"
   args:

@@ -13,7 +13,15 @@
       - "NetworkManager-tui"
       - "glances"
       - "zsh"
+      - "podman"
+      - "libvirt"
     state: present
+- name: "Enable Podman Socket"
+  ansible.builtin.systemd:
+    name: "podman.socket"
+    scope: user
+    enabled: true
+    state: started
 - name: Install Oh-My-Zsh
   ansible.builtin.import_role:
     name: gantsign.oh-my-zsh
