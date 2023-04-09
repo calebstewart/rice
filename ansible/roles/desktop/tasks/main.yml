@@ -45,6 +45,8 @@
   community.general.flatpak:
     name:
       - org.signal.Signal
+    method: user
+    state: present
 - name: Check if Browserpass Native Exists
   ansible.builtin.stat:
     path: /usr/bin/browserpass-linux64
