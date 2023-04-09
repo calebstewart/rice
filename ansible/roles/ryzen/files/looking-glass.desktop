@@ -1,0 +1,6 @@
+[Desktop Entry]
+Type=Application
+Name=Looking Glass
+Comment=Looking Glass Remote Viewer Client
+Exec=looking-glass-client
+Icon=looking-glass

@@ -43,6 +43,20 @@
   args:
     chdir: "{{ ansible_env.HOME }}/.local/src/LookingGlass/client/build"
   when: lg_clone.after != lg_clone.before
+- name: "Install Looking Glass Client Icon"
+  ansible.builtin.file:
+    src: "{{ ansible_env.HOME }}/.local/src/LookingGlass/resources/icon-128x128.png"
+    dest: "{{ ansible_env.HOME }}/.local/share/icons/looking-glass.png"
+    owner: "{{ ansible_env.USER }}"
+    group: "{{ ansible_env.USER }}"
+    state: link
+- name: "Install Looking Glass Desktop Entry"
+  ansible.builtin.copy:
+    src: "files/looking-glass.desktop"
+    dest: "{{ ansible_env.HOME }}/.local/share/applications/looking-glass.desktop"
+    mode: preserve
+    owner: "{{ ansible_env.USER }}"
+    group: "{{ ansible_env.USER }}"
 - name: "Install VFIO PCI Configuration"
   become: true
   ansible.builtin.copy:
