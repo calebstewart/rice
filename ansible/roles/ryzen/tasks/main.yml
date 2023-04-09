@@ -1,0 +1,57 @@
+---
+- name: "Install Looking Glass Build Dependencies"
+  become: true
+  ansible.builtin.dnf:
+    name:
+      - cmake
+      - gcc
+      - gcc-c++
+      - libglvnd-devel
+      - fontconfig-devel
+      - spice-protocol
+      - make
+      - nettle-devel
+      - pkgconf-pkg-config
+      - binutils-devel
+      - libxkbcommon-x11-devel
+      - wayland-devel
+      - wayland-protocols-devel
+      - dejavu-sans-mono-fonts
+      - pipewire-devel
+      - libsamplerate-devel
+      - dkms
+      - kernel-devel
+      - kernel-headers
+- name: "Checkout Looking Glass Source"
+  ansible.builtin.git:
+    repo: "https://github.com/gnif/LookingGlass.git"
+    recursive: true
+    dest: "{{ ansible_env.HOME }}/.local/src/LookingGlass"
+  register: lg_clone
+- name: "Create Looking Glass Output Directory"
+  ansible.builtin.file:
+    path: "{{ ansible_env.HOME }}/.local/src/LookingGlass/client/build"
+    state: directory
+    mode: "0755"
+- name: "Build and Install Looking Glass"
+  ansible.builtin.shell: |
+    cmake \
+      -DCMAKE_INSTALL_PREFIX="{{ ansible_env.HOME }}/.local" \
+      -DENABLE_X11=no \
+      .. && make install
+  args:
+    chdir: "{{ ansible_env.HOME }}/.local/src/LookingGlass/client/build"
+  when: lg_clone.after != lg_clone.before
+- name: "Install VFIO PCI Configuration"
+  become: true
+  ansible.builtin.copy:
+    src: "files/vfio-pci.conf"
+    dest: "/etc/modprobe.d/vfio-pci.conf"
+    mode: "0644"
+    owner: root
+    group: root
+  register: vfio_pci_conf
+- name: "Rebuild initramfs with Dracut"
+  become: true
+  when: vfio_pci_conf.changed
+  ansible.builtin.shell: dracut --regenerate-all --force

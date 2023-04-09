@@ -54,6 +54,13 @@
     state: link
 - name: Enable the RPM Fusion repository
   become: true
-  dnf:
-    name: "https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-{{ansible_distribution_major_version}}.noarch.rpm"
+  ansible.builtin.dnf:
+    name: "https://download1.rpmfusion.org/free/fedora/rpmfusion-free-release-{{ ansible_distribution_major_version }}.noarch.rpm"
     state: present
+- name: Allow User Management of Virtual Machines
+  become: true
+  ansible.builtin.user:
+    name: "{{ ansible_env.USER }}"
+    append: true
+    groups:
+      - libvirt

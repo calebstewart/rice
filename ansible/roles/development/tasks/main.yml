@@ -18,7 +18,11 @@
       - pyright
       - isort
 - name: Install Golang LSP Server
-  ansible.builtin.shell: "go install golang.org/x/tools/gopls@latest"
+  ansible.builtin.command: "go install golang.org/x/tools/gopls@latest"
+  args:
+    creates: "{{ ansible_env.HOME }}/.local/share/go/bin/gopls"
+  environment:
+    GOPATH: "{{ ansible_env.HOME }}/.local/share/go"
 - name: Install Doom Emacs Config
   ansible.builtin.copy:
     src: files/doom
@@ -31,11 +35,13 @@
     path: "{{ ansible_env.HOME }}/.config/emacs/bin/doom"
   register: doom_check
 - name: Update Doom
-  ansible.builtin.shell: "{{ ansible_env.HOME }}/.config/emacs/bin/doom upgrade --force"
+  ansible.builtin.command: "{{ ansible_env.HOME }}/.config/emacs/bin/doom upgrade --force"
   when: doom_check.stat.exists
+  changed_when: doom_check.stat.exists
 - name: Synchronize Doom Configuration
-  ansible.builtin.shell: "{{ ansible_env.HOME }}/.config/emacs/bin/doom sync"
+  ansible.builtin.command: "{{ ansible_env.HOME }}/.config/emacs/bin/doom sync"
   when: doom_check.stat.exists
+  changed_when: doom_check.stat.exists
 - name: Clone Doom Emacs
   ansible.builtin.git:
     dest: "{{ ansible_env.HOME }}/.config/emacs"
@@ -43,8 +49,16 @@
     depth: 1
   when: not doom_check.stat.exists
 - name: Install Doom Emacs
-  ansible.builtin.shell: "{{ ansible_env.HOME }}/.config/emacs/bin/doom install --env --install --fonts --hooks --force --doomdir {{ ansible_env.HOME }}/.config/doom"
+  ansible.builtin.command: |
+    {{ ansible_env.HOME }}/.config/emacs/bin/doom install \
+      --env \
+      --install \
+      --fonts \
+      --hooks \
+      --force \
+      --doomdir {{ ansible_env.HOME }}/.config/doom
   when: not doom_check.stat.exists
+  changed_when: not doom_check.stat.exists
 - name: Install zsh custom script
   ansible.builtin.copy:
     src: files/100-development.zsh
@@ -56,10 +70,12 @@
   ansible.builtin.get_url:
     url: "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip"
     dest: "/tmp/awscliv2.zip"
+    mode: "0600"
 - name: Download AWS CLI signature
   ansible.builtin.get_url:
     url: "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip.sig"
     dest: "/tmp/awscliv2.zip.sig"
+    mode: "0600"
 - name: Copy AWS CLI public key
   ansible.builtin.copy:
     src: files/awscli-pubkey.pub
@@ -67,8 +83,9 @@
     mode: preserve
 - name: Verify AWS CLI Installer
   ansible.builtin.shell: |
-    gpg --import /tmp/awscli-pubkey.pub
-    gpg --verify /tmp/awscliv2.zip.sig /tmp/awscliv2.zip
+    gpg --import /tmp/awscli-pubkey.pub && \
+      gpgv /tmp/awscliv2.zip.sig /tmp/awscliv2.zip
+  changed_when: true
 - name: Unzip awscli Installer
   ansible.builtin.unarchive:
     src: /tmp/awscliv2.zip
@@ -76,7 +93,8 @@
     copy: false
 - name: Install AWS CLI
   become: true
-  ansible.builtin.shell: /tmp/aws/install --update
+  ansible.builtin.command: /tmp/aws/install --update
+  changed_when: true
 - name: Install AWS Session Manager Plugin
   become: true
   ansible.builtin.dnf:

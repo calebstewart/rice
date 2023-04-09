@@ -1,0 +1,4 @@
+---
+collections:
+  - ovirt.ovirt
+  - gantsign.oh-my-zsh
