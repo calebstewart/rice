@@ -2,5 +2,5 @@
 Type=Application
 Name=Looking Glass
 Comment=Looking Glass Remote Viewer Client
-Exec=looking-glass-client
+Exec=/bin/sh $HOME/.config/looking-glass/wrapper.sh
 Icon=looking-glass
