@@ -61,8 +61,8 @@
   changed_when: not doom_check.stat.exists
 - name: Install zsh custom script
   ansible.builtin.copy:
-    src: files/100-development.zsh
-    dest: "{{ ansible_env.HOME }}/.oh-my-zsh/custom/"
+    src: files/100-development.conf
+    dest: "{{ ansible_env.HOME }}/.config/environment.d"
     owner: "{{ ansible_env.USER }}"
     group: "{{ ansible_env.USER }}"
     mode: preserve

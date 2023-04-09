@@ -39,6 +39,13 @@
     owner: "{{ ansible_env.USER }}"
     group: "{{ ansible_env.USER }}"
     mode: preserve
+- name: "Install Systemd Environment Setup Scripts"
+  ansible.builtin.copy:
+    src: files/environment.d
+    dest: "{{ ansible_env.HOME }}/.config/"
+    owner: "{{ ansible_env.USER }}"
+    group: "{{ ansible_env.USER }}"
+    mode: preserve
 - name: "Install zsh-syntax-highlighting"
   ansible.builtin.git:
     repo: https://github.com/zsh-users/zsh-syntax-highlighting.git
