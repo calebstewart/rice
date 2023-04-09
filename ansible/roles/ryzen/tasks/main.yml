@@ -61,7 +61,6 @@
   ansible.builtin.file:
     src: "{{ ansible_env.HOME }}/.config/looking-glass/wrapper.sh"
     dest: "{{ ansible_env.HOME }}/.local/bin/looking-glass-gui-wrapper"
-    mode: preserve
     owner: "{{ ansible_env.USER }}"
     group: "{{ ansible_env.USER }}"
     state: link
