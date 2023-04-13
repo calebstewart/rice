@@ -1,0 +1,13 @@
+[Desktop Entry]
+Name=Brave Profile Chooser
+GenericName=Web Browser
+Comment=Select a Profile an Open Brave
+Type=Application
+MimeType=application/pdf;application/rdf+xml;application/rss+xml;application/xhtml+xml;application/xhtml_xml;application/xml;image/gif;image/jpeg;image/png;image/webp;text/html;text/xml;x-scheme-handler/http;x-scheme-handler/https;x-scheme-handler/ipfs;x-scheme-handler/ipns;
+Categories=Network;WebBrowser;
+StartupNotify=true
+StartupWMClass=brave-browser
+Terminal=false
+Icon=brave-desktop
+Exec=$HOME/.config/sway/scripts/brave-profile-chooser.sh
+Version=1.0

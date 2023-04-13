@@ -97,6 +97,13 @@
     owner: "{{ ansible_env.USER }}"
     group: "{{ ansible_env.USER }}"
     mode: preserve
+- name: Install Custom Desktop Entries
+  ansible.builtin.copy:
+    src: files/applications/
+    dest: "{{ ansible_env.HOME }}/.local/share/applications/"
+    owner: "{{ ansible_env.USER }}"
+    group: "{{ ansible_env.USER }}"
+    mode: preserve
 - name: Enable Gammastep Service
   ansible.builtin.systemd:
     name: "gammastep.service"
