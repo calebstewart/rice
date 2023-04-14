@@ -31,7 +31,7 @@
 - name: "Linking Application Icons"
   ansible.builtin.file:
     src: "{{ ansible_env.HOME }}/.local/share/webapps/{{ app.name }}/{{ item.sizes }}/{{ app.name }}.png"
-    dest: "{{ ansible_env.HOME }}/.local/share/icons/hicolor/{{ item.sizes }}/{{ app_name }}.png"
+    dest: "{{ ansible_env.HOME }}/.local/share/icons/hicolor/{{ item.sizes }}/{{ app.name }}.png"
     owner: "{{ ansible_env.USER }}"
     group: "{{ ansible_env.USER }}"
     state: link
