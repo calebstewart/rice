@@ -60,10 +60,17 @@
       --doomdir {{ ansible_env.HOME }}/.config/doom
   when: not doom_check.stat.exists
   changed_when: not doom_check.stat.exists
-- name: Install zsh custom script
+- name: Install SystemD Environment Configuration
   ansible.builtin.copy:
     src: files/100-development.conf
     dest: "{{ ansible_env.HOME }}/.config/environment.d"
+    owner: "{{ ansible_env.USER }}"
+    group: "{{ ansible_env.USER }}"
+    mode: preserve
+- name: Install ZSH Custom Scripts
+  ansible.builtin.copy:
+    src: files/zsh-custom/
+    dest: "{{ ansible_env.HOME }}/.oh-my-zsh/custom/"
     owner: "{{ ansible_env.USER }}"
     group: "{{ ansible_env.USER }}"
     mode: preserve
