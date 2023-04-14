@@ -7,7 +7,7 @@
 - name: "{{ app.name }} : Download Application Manifest"
   ansible.builtin.get_url:
     url: "{{ app.manifest_url }}"
-    dest: "{{ ansible_env.HOME }}"
+    dest: "{{ ansible_env.HOME }}/.local/share/webapps/{{ app.name }}/manifest.json"
     mode: "0644"
     force: true
   register: get_manifest
