@@ -145,7 +145,7 @@
   ansible.builtin.command: fc-cache -f
   changed_when: true
 - name: Install Brave Web Apps
-  import_role:
+  include_role:
     name: "install_pwa"
   vars:
     app: "{{ item }}"
