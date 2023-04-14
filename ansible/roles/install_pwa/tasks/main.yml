@@ -25,7 +25,7 @@
   loop: "{{ manifest.icons }}"
 - name: "Download Application Icons"
   ansible.builtin.get_url:
-    url: "{{ 'https' if item.src.startswith('//') else '' }}{{ item.src }}"
+    url: "{{ 'https:' if item.src.startswith('//') else '' }}{{ item.src }}"
     dest: "{{ ansible_env.HOME }}/.local/share/webapps/{{ app.name }}/{{ item.sizes }}/{{ app.name }}.png"
   loop: "{{ manifest.icons }}"
 - name: "Linking Application Icons"
