@@ -6,4 +6,9 @@ Type=Application
 Name={{ manifest.name }}
 Comment={{ manifest.name }}
 Icon=brave-webapps-{{ app.name }}
-Exec=brave-browser "--profile-directory={{ app.profile }}" "--app={{ app.url }}{{ manifest.start_url }}"
+{% if manifest.start_url.startswith("/") %}
+{% set manifest_url = app.manifest_url | urlsplit %}
+Exec=brave-browser "--profile-directory={{app.profile}}" "--app={{ manifest_url.scheme }}://{{ manifest_url.hostname }}{{ manifest.start_url }}"
+{% else %}
+Exec=brave-browser "--profile-directory={{app.profile}}" "--app={{ manifest.start_url }}"
+{% endif %}

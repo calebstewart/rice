@@ -144,12 +144,12 @@
 - name: Updating fontconfig cache
   ansible.builtin.command: fc-cache -f
   changed_when: true
-- name: Install Google Messages
+- name: Install Brave Web Apps
   import_role:
     name: "install_pwa"
   vars:
-    app:
-      name: "messages.google.com"
-      url: "https://messages.google.com"
+    app: "{{ item }}"
+  loop:
+    - name: "messages.google.com"
       manifest_url: "https://messages.google.com/web/manifest.json"
       profile: "Personal"
