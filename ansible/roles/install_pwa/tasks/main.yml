@@ -28,7 +28,8 @@
         "{{ ansible_env.HOME }}/.local/share/webapps/{{ app.name }}/icon.png" \
         "brave-webapps-{{ app.name }}"
   loop: ["32", "64", "128", "256", "512"]
-  loop_var: "app_icon_size"
+  loop_control:
+    loop_var: "app_icon_size"
 - name: "{{ app.name }} : Install Application Desktop Entry"
   ansible.builtin.template:
     src: "templates/launcher.desktop.j2"
