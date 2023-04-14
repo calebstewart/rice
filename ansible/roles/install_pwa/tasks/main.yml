@@ -1,13 +1,13 @@
 ---
 - name: "{{ app.name }} : Create Application Directory"
   ansible.builtin.file:
-    path: "{{ ansible_env.HOME }}/.local/share/webapps/{{ app.name }}"
+    path: "{{ ansible_env.HOME }}/.local/share/webapps/{{ app.name }}/{{ app.profile }}"
     state: directory
     mode: "0755"
 - name: "{{ app.name }} : Download Application Manifest"
   ansible.builtin.get_url:
     url: "{{ app.manifest_url }}"
-    dest: "{{ ansible_env.HOME }}/.local/share/webapps/{{ app.name }}/manifest.json"
+    dest: "{{ ansible_env.HOME }}/.local/share/webapps/{{ app.name }}/{{ app.profile }}/manifest.json"
     mode: "0644"
     force: true
   register: get_manifest
@@ -20,12 +20,12 @@
 - name: "{{ app.name }} : Download Application Icon"
   ansible.builtin.get_url:
     url: "{{ 'https:' if manifest.icons[-1].src.startswith('//') else '' }}{{ manifest.icons[-1].src }}"
-    dest: "{{ ansible_env.HOME }}/.local/share/webapps/{{ app.name }}/icon.png"
+    dest: "{{ ansible_env.HOME }}/.local/share/webapps/{{ app.name }}/{{ app.profile }}/icon.png"
 - name: "{{ app.name }} : Installing Application Icons"
   ansible.builtin.shell: |
     xdg-icon-resource install \
          --size "{{ app_icon_size }}" \
-        "{{ ansible_env.HOME }}/.local/share/webapps/{{ app.name }}/icon.png" \
+        "{{ ansible_env.HOME }}/.local/share/webapps/{{ app.name }}/{{ app.profile }}/icon.png" \
         "brave-webapps-{{ app.profile }}-{{ app.name }}"
   loop: ["32", "64", "128", "256", "512"]
   loop_control:
@@ -33,13 +33,13 @@
 - name: "{{ app.name }} : Install Application Desktop Entry"
   ansible.builtin.template:
     src: "templates/launcher.desktop.j2"
-    dest: "{{ ansible_env.HOME }}/.local/share/webapps/{{ app.name }}/launcher.desktop"
+    dest: "{{ ansible_env.HOME }}/.local/share/webapps/{{ app.name }}/{{ app.profile }}/launcher.desktop"
     owner: "{{ ansible_env.USER }}"
     group: "{{ ansible_env.USER }}"
     mode: "0744"
 - name: "{{ app.name }} : Link Application Desktop Entry"
   ansible.builtin.file:
-    src: "{{ ansible_env.HOME }}/.local/share/webapps/{{ app.name }}/launcher.desktop"
+    src: "{{ ansible_env.HOME }}/.local/share/webapps/{{ app.name }}/{{ app.profile }}/launcher.desktop"
     dest: "{{ ansible_env.HOME }}/.local/share/applications/brave-webapp-{{ app.profile }}-{{ app.name }}.desktop"
     owner: "{{ ansible_env.USER }}"
     group: "{{ ansible_env.USER }}"
