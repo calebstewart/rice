@@ -24,6 +24,11 @@ PROFILE_NAMES=$(echo "$PROFILE_CACHE" | jq -s -r '.[].value.name')
 # Ask the user which profile to use
 SELECTED=$(echo "$PROFILE_NAMES" | wofi --show dmenu --prompt "Select a Profile")
 
+# Nothing selected
+if [ -z "$SELECTED" ]; then
+    exit
+fi
+
 # Translate the profile name back to the internal profile name (because chrome is dumb)
 PROFILE_NAME=$(echo "$PROFILE_CACHE" | jq -s -r '.[] | select(.value.name == "'"$SELECTED"'") | .key')
 
