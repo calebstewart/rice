@@ -18,20 +18,17 @@
   set_fact:
     manifest: "{{ manifest_raw.stdout | from_json }}"
 - name: "Create Application Icon Directory Structure"
-  when: get_manifest.changed
   ansible.builtin.file:
     path: "{{ ansible_env.HOME }}/.local/share/webapps/{{ app.name }}/{{ item.sizes }}"
     state: directory
     mode: "0755"
   loop: "{{ manifest.icons }}"
 - name: "Download Application Icons"
-  when: get_manifest.changed
   ansible.builtin.get_url:
     url: "{{ 'https' if item.src.startswith('//') else '' }}{{ item.src }}"
     dest: "{{ ansible_env.HOME }}/.local/share/webapps/{{ app.name }}/{{ item.sizes }}/{{ app.name }}.png"
   loop: "{{ manifest.icons }}"
 - name: "Linking Application Icons"
-  when: get_manifest.changed
   ansible.builtin.file:
     src: "{{ ansible_env.HOME }}/.local/share/webapps/{{ app.name }}/{{ item.sizes }}/{{ app.name }}.png"
     dest: "{{ ansible_env.HOME }}/.local/share/icons/hicolor/{{ item.sizes }}/{{ app_name }}.png"
