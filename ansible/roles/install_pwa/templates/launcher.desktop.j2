@@ -5,5 +5,5 @@ Terminal=false
 Type=Application
 Name={{ manifest.name }}
 Comment={{ manifest.name }}
-Icon={{ app.name }}
+Icon=brave-webapps-{{ app.name }}
 Exec=brave-browser "--profile-directory={{ app.profile }}" "--app={{ app.url }}{{ manifest.start_url }}"
