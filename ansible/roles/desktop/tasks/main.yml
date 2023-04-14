@@ -153,3 +153,6 @@
     - name: "messages.google.com"
       manifest_url: "https://messages.google.com/web/manifest.json"
       profile: "Personal"
+    - name: "spotify.com"
+      manifest_url: "https://open.spotifycdn.com/cdn/generated/manifest-web-player.3a6f5207.json"
+      profile: "Personal"

@@ -26,7 +26,7 @@
     xdg-icon-resource install \
          --size "{{ app_icon_size }}" \
         "{{ ansible_env.HOME }}/.local/share/webapps/{{ app.name }}/icon.png" \
-        "brave-webapps-{{ app.name }}"
+        "brave-webapps-{{ app.profile }}-{{ app.name }}"
   loop: ["32", "64", "128", "256", "512"]
   loop_control:
     loop_var: "app_icon_size"
@@ -40,7 +40,7 @@
 - name: "{{ app.name }} : Link Application Desktop Entry"
   ansible.builtin.file:
     src: "{{ ansible_env.HOME }}/.local/share/webapps/{{ app.name }}/launcher.desktop"
-    dest: "{{ ansible_env.HOME }}/.local/share/applications/{{ app.name }}.desktop"
+    dest: "{{ ansible_env.HOME }}/.local/share/applications/brave-webapp-{{ app.profile }}-{{ app.name }}.desktop"
     owner: "{{ ansible_env.USER }}"
     group: "{{ ansible_env.USER }}"
     state: link

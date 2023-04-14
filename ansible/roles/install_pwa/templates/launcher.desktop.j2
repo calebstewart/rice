@@ -3,9 +3,9 @@
 Version=1.0
 Terminal=false
 Type=Application
-Name={{ manifest.name }}
-Comment={{ manifest.name }}
-Icon=brave-webapps-{{ app.name }}
+Name={{ app.profile }} - {{ manifest.name }}
+Comment={{ app.profile }} - {{ manifest.name }}
+Icon=brave-webapps-{{ app.profile }}-{{ app.name }}
 {% if manifest.start_url.startswith("/") %}
 {% set manifest_url = app.manifest_url | urlsplit %}
 Exec=brave-browser "--profile-directory={{app.profile}}" "--app={{ manifest_url.scheme }}://{{ manifest_url.hostname }}{{ manifest.start_url }}"
