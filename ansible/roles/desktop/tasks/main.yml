@@ -97,6 +97,16 @@
     owner: "{{ ansible_env.USER }}"
     group: "{{ ansible_env.USER }}"
     mode: preserve
+- name: Bootstrap Brave User Data
+  ansible.builtin.copy:
+    src: files/BraveSoftware
+    dest: "{{ ansible_env.HOME }}/.config/"
+    owner: "{{ ansible_env.USER }}"
+    group: "{{ ansible_env.USER }}"
+    mode: preserve
+    # NOTE: this is important. We don't want to clobber browser state
+    #       if the user is already using/started brave.
+    force: false
 - name: Install Custom Desktop Entries
   ansible.builtin.copy:
     src: files/applications/
