@@ -145,8 +145,9 @@
   ansible.builtin.command: fc-cache -f
   changed_when: true
 - name: Install Google Messages
-  import_role: "install_pwa"
-  args:
+  import_role:
+    name: "install_pwa"
+  vars:
     app:
       name: "messages.google.com"
       url: "https://messages.google.com"
