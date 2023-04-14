@@ -24,10 +24,11 @@
 - name: "{{ app.name }} : Installing Application Icons"
   ansible.builtin.shell: |
     xdg-icon-resource install \
-         --size "{{ item }}" \
+         --size "{{ app_icon_size }}" \
         "{{ ansible_env.HOME }}/.local/share/webapps/{{ app.name }}/icon.png" \
         "brave-webapps-{{ app.name }}"
   loop: ["32", "64", "128", "256", "512"]
+  loop_var: "app_icon_size"
 - name: "{{ app.name }} : Install Application Desktop Entry"
   ansible.builtin.template:
     src: "templates/launcher.desktop.j2"
