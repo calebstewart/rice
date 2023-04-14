@@ -17,31 +17,17 @@
 - name: "{{ app.name }} : Parse Application Manifest"
   set_fact:
     manifest: "{{ manifest_raw.stdout | from_json }}"
-- name: "{{ app.name }} : Create Application Icon Directory Structure"
-  ansible.builtin.file:
-    path: "{{ ansible_env.HOME }}/.local/share/webapps/{{ app.name }}/{{ item.sizes }}"
-    state: directory
-    mode: "0755"
-  loop: "{{ manifest.icons }}"
-- name: "{{ app.name }} : Download Application Icons"
+- name: "{{ app.name }} : Download Application Icon"
   ansible.builtin.get_url:
-    url: "{{ 'https:' if item.src.startswith('//') else '' }}{{ item.src }}"
-    dest: "{{ ansible_env.HOME }}/.local/share/webapps/{{ app.name }}/{{ item.sizes }}/{{ app.name }}.png"
-  loop: "{{ manifest.icons }}"
-- name: "{{ app.name }} : Verifying User Icon Directory"
-  ansible.builtin.file:
-    path: "{{ ansible_env.HOME }}/.local/share/icons/hicolor/{{ item.sizes }}"
-    state: directory
-    mode: "0755"
-  loop: "{{ manifest.icons }}"
-- name: "{{ app.name }} : Linking Application Icons"
-  ansible.builtin.file:
-    src: "{{ ansible_env.HOME }}/.local/share/webapps/{{ app.name }}/{{ item.sizes }}/{{ app.name }}.png"
-    dest: "{{ ansible_env.HOME }}/.local/share/icons/hicolor/{{ item.sizes }}/{{ app.name }}.png"
-    owner: "{{ ansible_env.USER }}"
-    group: "{{ ansible_env.USER }}"
-    state: link
-  loop: "{{ manifest.icons }}"
+    url: "{{ 'https:' if item.src.startswith('//') else '' }}{{ manifest.icons[-1].src }}"
+    dest: "{{ ansible_env.HOME }}/.local/share/webapps/{{ app.name }}/icon.png"
+- name: "{{ app.name }} : Installing Application Icons"
+  ansible.builtin.shell: |
+    xdg-icon-resource install \
+         --size "{{ item }}" \
+        "{{ ansible_env.HOME }}/.local/share/webapps/{{ app.name }}/icon.png" \
+        "{{ app.name }}"
+  loop: ["32", "64", "128", "256", "512"]
 - name: "{{ app.name }} : Install Application Desktop Entry"
   ansible.builtin.template:
     src: "templates/launcher.desktop.j2"
