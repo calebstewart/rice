@@ -19,7 +19,7 @@
     manifest: "{{ manifest_raw.stdout | from_json }}"
 - name: "{{ app.name }} : Download Application Icon"
   ansible.builtin.get_url:
-    url: "{{ 'https:' if item.src.startswith('//') else '' }}{{ manifest.icons[-1].src }}"
+    url: "{{ 'https:' if manifest.icons[-1].src.startswith('//') else '' }}{{ manifest.icons[-1].src }}"
     dest: "{{ ansible_env.HOME }}/.local/share/webapps/{{ app.name }}/icon.png"
 - name: "{{ app.name }} : Installing Application Icons"
   ansible.builtin.shell: |
