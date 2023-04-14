@@ -30,9 +30,10 @@
   loop: "{{ manifest.icons }}"
 - name: "{{ app.name }} : Verifying User Icon Directory"
   ansible.builtin.file:
-    path: "{{ ansible_env.HOME }}/.local/share/icons/hicolor"
+    path: "{{ ansible_env.HOME }}/.local/share/icons/hicolor/{{ item.sizes }}"
     state: directory
     mode: "0755"
+  loop: "{{ manifest.icons }}"
 - name: "{{ app.name }} : Linking Application Icons"
   ansible.builtin.file:
     src: "{{ ansible_env.HOME }}/.local/share/webapps/{{ app.name }}/{{ item.sizes }}/{{ app.name }}.png"
