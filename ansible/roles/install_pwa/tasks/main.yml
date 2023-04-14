@@ -1,34 +1,39 @@
 ---
-- name: "Create Application Directory"
+- name: "{{ app.name }} : Create Application Directory"
   ansible.builtin.file:
     path: "{{ ansible_env.HOME }}/.local/share/webapps/{{ app.name }}"
     state: directory
     mode: "0755"
-- name: "Download Application Manifest"
+- name: "{{ app.name }} : Download Application Manifest"
   ansible.builtin.get_url:
     url: "{{ app.manifest_url }}"
     dest: "{{ ansible_env.HOME }}"
     mode: "0644"
     force: true
   register: get_manifest
-- name: "Load Application Manifest"
+- name: "{{ app.name }} : Load Application Manifest"
   ansible.builtin.shell: 'cat "{{ get_manifest.dest }}"'
   register: manifest_raw
-- name: "Parse Application Manifest"
+- name: "{{ app.name }} : Parse Application Manifest"
   set_fact:
     manifest: "{{ manifest_raw.stdout | from_json }}"
-- name: "Create Application Icon Directory Structure"
+- name: "{{ app.name }} : Create Application Icon Directory Structure"
   ansible.builtin.file:
     path: "{{ ansible_env.HOME }}/.local/share/webapps/{{ app.name }}/{{ item.sizes }}"
     state: directory
     mode: "0755"
   loop: "{{ manifest.icons }}"
-- name: "Download Application Icons"
+- name: "{{ app.name }} : Download Application Icons"
   ansible.builtin.get_url:
     url: "{{ 'https:' if item.src.startswith('//') else '' }}{{ item.src }}"
     dest: "{{ ansible_env.HOME }}/.local/share/webapps/{{ app.name }}/{{ item.sizes }}/{{ app.name }}.png"
   loop: "{{ manifest.icons }}"
-- name: "Linking Application Icons"
+- name: "{{ app.name }} : Verifying User Icon Directory"
+  ansible.builtin.file:
+    path: "{{ ansible_env.HOME }}/.local/share/icons/hicolor"
+    state: directory
+    mode: "0755"
+- name: "{{ app.name }} : Linking Application Icons"
   ansible.builtin.file:
     src: "{{ ansible_env.HOME }}/.local/share/webapps/{{ app.name }}/{{ item.sizes }}/{{ app.name }}.png"
     dest: "{{ ansible_env.HOME }}/.local/share/icons/hicolor/{{ item.sizes }}/{{ app.name }}.png"
@@ -36,14 +41,14 @@
     group: "{{ ansible_env.USER }}"
     state: link
   loop: "{{ manifest.icons }}"
-- name: "Install Application Desktop Entry"
+- name: "{{ app.name }} : Install Application Desktop Entry"
   ansible.builtin.template:
     src: "templates/launcher.desktop.j2"
     dest: "{{ ansible_env.HOME }}/.local/share/webapps/{{ app.name }}/launcher.desktop"
     owner: "{{ ansible_env.USER }}"
     group: "{{ ansible_env.USER }}"
     mode: "0744"
-- name: "Link Application Desktop Entry"
+- name: "{{ app.name }} : Link Application Desktop Entry"
   ansible.builtin.file:
     src: "{{ ansible_env.HOME }}/.local/share/webapps/{{ app.name }}/launcher.desktop"
     dest: "{{ ansible_env.HOME }}/.local/share/applications/{{ app.name }}.desktop"
