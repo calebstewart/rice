@@ -13,14 +13,14 @@ if __name__ == "__main__":
     )
     outputs = sorted(outputs, key=lambda output: output["rect"]["x"])
 
-    builtin_index = -1
+    builtin_index = 0
     for idx, output in enumerate(outputs):
         if output["name"].lower() == "edp-1":
             builtin_index = idx
             break
 
-    if builtin_index == -1:
-        raise Exception("could not find builtin output")
+    # if builtin_index == -1:
+    #     raise Exception("could not find builtin output")
 
     # Ensure any new workspaces adhere to the naming-output scheme
     for idx, output in enumerate(outputs):
