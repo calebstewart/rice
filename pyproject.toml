@@ -12,7 +12,7 @@ readme = "README.md"
 [tool.poetry.dependencies]
 python = "^3.10"
 typer = {extras = ["all"], version = "^0.7.0"}
-ansible = "^7.4.0"
+ansible = "9.4.0"
 gitpython = "^3.1.31"
 pydantic = "^1.10.7"
 xdg-base-dirs = "^6.0.0"
