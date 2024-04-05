@@ -1,0 +1,9 @@
+---
+- name: "Install Gaming Flatpaks"
+  community.general.flatpak:
+    name:
+      - com.parsecgaming.parsec
+      - com.valvesoftware.Steam
+      - com.valvesoftware.Steam.CompatibilityTool.Proton
+    state: present
+    method: user

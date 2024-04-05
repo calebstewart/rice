@@ -32,11 +32,11 @@ set $ws_config python $HOME/.config/sway/scripts/organize-workspaces.py
 
 ### UI Settings
 # Disable title bars and set border to 2 pixels
-default_border pixel 2
+default_border none
 
 # Enable inner gaps
 gaps inner 5
-
+gaps outer -5
 
 ### Output configuration
 # Default wallpaper (more resolutions are available in @datadir@/backgrounds/sway/)
